@@ -1,50 +1,69 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { toast } from "react-toastify";
 import Api from '../services/axios';
 import { useDispatch } from "react-redux";
 import { setCredentials } from '../store/slices/authSlice'
-
-
 
 const SignupPage = () => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [cPassword, setCpassword] = useState('');
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
-        console.log('handle submit')
         e.preventDefault()
         try {
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (name.trim().length < 4) {
                 toast.error('Name should have at least 3 characters !!')
+                return
             } else if (!emailRegex.test(email)) {
                 toast.error("Invalid email !!");
+                return
             } else if (password !== cPassword) {
                 toast.error("Passwords don't match !!");
+                return
             } else {
                 if (!/[A-Z]/.test(password)) {
                     toast.error('Password should have at least one uppercase letter !!');
+                    return
                 }
                 if (!/[a-z]/.test(password)) {
                     toast.error('Password should have at least one lowercase letter !!');
+                    return
                 }
                 if (!/[0-9]/.test(password)) {
                     toast.error('Password should have at least one number !!');
+                    return
                 }
                 if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
                     toast.error('Password should have at least one special character !!');
+                    return
                 }
                 if (password.trim().length < 6) {
                     toast.error('Password should be at least 6 characters long !!');
+                    return
                 }
+            }
+            const res = await Api.post('/register', { name, email, password });
+            if (res.data.status) {
+                dispatch(setCredentials({
+                    _id: res.data._id,
+                    name: res.data.name,
+                    email: res.data.email,
+                }));
+                navigate('/')
+                toast.success("signed up successfully")
+            } else if (!res.data.status) {
+                toast.error(res.data.message)
             }
         } catch (error) {
             console.log(error)
         }
-    }    
+    }
 
     return (
         <section className="bg-gray-50 dark:bg-gray-900">
