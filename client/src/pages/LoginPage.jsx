@@ -43,14 +43,9 @@ const LoginPage = () => {
             }
             const res = await Api.post('/login', { email, password });
             if (res.data.status) {
-                dispatch(setCredentials({
-                    _id: res.data._id,
-                    name: res.data.name,
-                    email: res.data.email,
-                    phone: res.data.phone
-                }));
+                dispatch(setCredentials(res.data.token))
                 toast.success("Logged in successfully..")
-                navigate('/')
+                navigate('/users/topics')
             } else if (!res.data.status) {
                 toast.error(res.data.message)
             }

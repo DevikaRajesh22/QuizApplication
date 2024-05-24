@@ -13,6 +13,9 @@ const userSchema = mongoose.Schema({
         type: String,
         required: true,
     },
+    selectedTopics: {
+        type: [String]
+      }
 },
     {
         timestamps: true,

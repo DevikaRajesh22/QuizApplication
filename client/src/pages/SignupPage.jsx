@@ -50,12 +50,8 @@ const SignupPage = () => {
             }
             const res = await Api.post('/register', { name, email, password });
             if (res.data.status) {
-                dispatch(setCredentials({
-                    _id: res.data._id,
-                    name: res.data.name,
-                    email: res.data.email,
-                }));
-                navigate('/')
+                dispatch(setCredentials(res.data.token))
+                navigate('/users/topics')
                 toast.success("signed up successfully")
             } else if (!res.data.status) {
                 toast.error(res.data.message)

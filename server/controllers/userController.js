@@ -17,8 +17,9 @@ const register = asyncHandler(async (req, res) => {
         const user = new User({ name: name, email: email, password: hashedPassword });
         await user.save();
         if (user) {
-            generateToken(res, user._id, 'user');
+            const token = generateToken(res, user._id, 'userToken');
             res.status(201).json({
+                token: token,
                 status: true,
                 _id: user._id,
                 name: user.name,
@@ -30,7 +31,7 @@ const register = asyncHandler(async (req, res) => {
         }
     } catch (error) {
         console.log(error.message);
-        res.status(500).json({ message: "Error creating user" });
+        res.status(500).json({ message: "Internal Server Error" });
     }
 })
 
@@ -42,13 +43,13 @@ const login = asyncHandler(async (req, res) => {
             const hashedPassword = user.password;
             const passwordMatch = await bcrypt.compare(password, hashedPassword);
             if (passwordMatch) {
-                generateToken(res, user._id, 'user');
+                const token = generateToken(res, user._id, 'userToken');
                 res.status(201).json({
+                    token: token,
                     status: true,
                     _id: user._id,
                     name: user.name,
                     email: user.email,
-                    phone: user.phone
                 });
             } else {
                 res.status(200).json({ status: false, message: 'Wrong email or password' });
@@ -58,8 +59,30 @@ const login = asyncHandler(async (req, res) => {
         }
     } catch (error) {
         console.log(error.message);
-        res.status(500).json({ message: "Error creating user" });
+        res.status(500).json({ message: "Internal Server Error" });
     }
 })
 
-module.exports = { register, login };
+const topicSelection = asyncHandler(async (req, res) => {
+    try {
+        console.log('topic controller')
+        const { topics } = req.body;
+        console.log(topics)
+        if (!topics || !Array.isArray(topics)) {
+            return res.status(400).json({ success: false, message: 'Invalid topics format' });
+        }
+        const user = await User.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+        user.selectedTopics = topics;
+        await user.save();
+        res.status(200).json({ success: true, message: 'Topics selected successfully' });
+
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+})
+
+module.exports = { register, login, topicSelection };
