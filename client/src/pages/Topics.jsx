@@ -36,7 +36,6 @@ const Topics = () => {
                 },
                 withCredentials: true,
             });
-            console.log('res',response)
             if (response.data.success) {
                 toast.success('Topics selected successfully!');
                 //  navigate

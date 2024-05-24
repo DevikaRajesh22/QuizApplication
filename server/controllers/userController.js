@@ -1,5 +1,6 @@
 const asyncHandler = require("express-async-handler");
 const User = require('../models/userModel');
+const Question=require('../models/questionModel');
 const bcrypt = require('bcryptjs');
 const generateToken = require('../utils/generateToken');
 const jwt = require('jsonwebtoken')
@@ -65,7 +66,6 @@ const login = asyncHandler(async (req, res) => {
 
 const topicSelection = asyncHandler(async (req, res) => {
     try {
-        console.log('topic controller')
         const { topics } = req.body;
         console.log(topics)
         if (!topics || !Array.isArray(topics)) {
@@ -85,4 +85,23 @@ const topicSelection = asyncHandler(async (req, res) => {
     }
 })
 
-module.exports = { register, login, topicSelection };
+const createQuestion=asyncHandler(async(req,res)=>{
+    try{
+        console.log('question controller')
+        const { topic, question, correctAnswer, marks, options } = req.body;
+        const newQuestion = new Question({
+            topic,
+            question,
+            correctAnswer,
+            marks,
+            options
+        });
+        await newQuestion.save();
+        res.status(201).json({ success: true, message: 'Question created successfully' });
+    }catch(error){
+        console.log(error.message);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+})
+
+module.exports = { register, login, topicSelection, createQuestion };
