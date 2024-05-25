@@ -11,9 +11,23 @@ const useQuery = () => {
 const QuizPage = () => {
     const [questions, setQuestions] = useState([]);
     const [selectedAnswers, setSelectedAnswers] = useState({});
+    const [timeLeft, setTimeLeft] = useState(240);
+    const [timerExpired, setTimerExpired] = useState(false);
     const navigate = useNavigate()
     const query = useQuery();
     const selectedTopics = query.getAll('topics');
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (timeLeft > 0) {
+                setTimeLeft(prevTimeLeft => prevTimeLeft - 1);
+            } else {
+                setTimerExpired(true);
+            }
+        }, 1000);
+
+        return () => clearTimeout(timer);
+    }, [timeLeft]);
 
     const fetchRandomQuestion = useCallback(async () => {
         try {
@@ -45,7 +59,8 @@ const QuizPage = () => {
         try {
 
             const token = localStorage.getItem('userInfo');
-            const response = await Api.post('/result', {  selectedAnswers, selectedTopics }, {
+            const timeTaken = 240 - timeLeft;
+            const response = await Api.post('/result', { selectedAnswers, timeTaken, selectedTopics }, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,
@@ -63,6 +78,10 @@ const QuizPage = () => {
         }
     };
 
+    const handleRetakeQuiz = () => {
+        navigate('/users/topics');
+    };
+
     return (
         <div className="bg-gray-900 text-white min-h-screen flex flex-col">
             <Navbar />
@@ -70,6 +89,20 @@ const QuizPage = () => {
                 <div className="p-8 rounded-md bg-gray-800 shadow-lg m-20">
                     {questions.length > 0 ? (
                         <form onSubmit={handleSubmit}>
+                            <div className="flex justify-between mb-4">
+                                <h3 className="text-lg font-bold">
+                                    Time Left: {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}
+                                </h3>
+                                {timerExpired && (
+                                    <button
+                                        type="button"
+                                        onClick={handleRetakeQuiz}
+                                        className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-md"
+                                    >
+                                        Retake Quiz
+                                    </button>
+                                )}
+                            </div>
                             {questions.map((question, index) => (
                                 <div key={question._id} className="mb-6">
                                     <h2 className="text-2xl mb-4">{index + 1}. {question.question}</h2>
@@ -94,6 +127,7 @@ const QuizPage = () => {
                             <button
                                 type="submit"
                                 className="mt-8 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md"
+                                disabled={timerExpired}
                             >
                                 Submit
                             </button>

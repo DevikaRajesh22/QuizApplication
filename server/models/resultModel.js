@@ -13,7 +13,11 @@ const resultSchema = mongoose.Schema({
     topics: {
         type: [String],
         required: true
-    }
+    },
+    timeTaken: {
+        type: Number,
+        required: true,
+    },
 },
     {
         timestamps: true,

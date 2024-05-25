@@ -132,7 +132,7 @@ const getRandomQuestions = asyncHandler(async (req, res) => {
 
 const result = asyncHandler(async (req, res) => {
     try {
-        const { selectedAnswers, selectedTopics } = req.body;
+        const { selectedAnswers, selectedTopics, timeTaken } = req.body;
         let totalMarks = 0;
         const userId = req.user._id;
         for (const questionId in selectedAnswers) {
@@ -151,7 +151,8 @@ const result = asyncHandler(async (req, res) => {
         const newResult = {
             userId: userId,
             marks: totalMarks,
-            topics: selectedTopics
+            topics: selectedTopics,
+            timeTaken: timeTaken
         };
         const result = new Result(newResult);
         await result.save();
@@ -174,6 +175,16 @@ const scorecards = asyncHandler(async (req, res) => {
     }
 })
 
+const leaderboard = asyncHandler(async (req, res) => {
+    try {
+        const results = await Result.find().populate('userId').sort({ marks: -1, timeTaken: 1 });
+        res.status(200).json({ success: true, data: results })
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+})
+
 const logout = asyncHandler(async (req, res) => {
     try {
         res.cookie('userToken', '', {
@@ -187,4 +198,4 @@ const logout = asyncHandler(async (req, res) => {
     }
 })
 
-module.exports = { register, login, topicSelection, createQuestion, getRandomQuestions, result, scorecards, logout };
+module.exports = { register, login, topicSelection, createQuestion, getRandomQuestions, result, scorecards, leaderboard, logout };

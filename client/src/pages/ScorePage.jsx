@@ -31,11 +31,9 @@ const ScorePage = () => {
         fetchScorecards();
     }, []);
 
-    console.log('sc', scorecards)
-
     return (
         <div className="bg-gray-100 dark:bg-gray-900 min-h-screen flex flex-col">
-            <Navbar /> {/* Add Navbar component here */}
+            <Navbar />
             <div className="flex-grow flex items-center justify-center">
                 <div className="w-full max-w-4xl p-8">
                     <h1 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-8">
