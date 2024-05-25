@@ -1,6 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const User = require('../models/userModel');
-const Question=require('../models/questionModel');
+const Question = require('../models/questionModel');
+const Result = require('../models/resultModel');
 const bcrypt = require('bcryptjs');
 const generateToken = require('../utils/generateToken');
 const jwt = require('jsonwebtoken')
@@ -67,7 +68,6 @@ const login = asyncHandler(async (req, res) => {
 const topicSelection = asyncHandler(async (req, res) => {
     try {
         const { topics } = req.body;
-        console.log(topics)
         if (!topics || !Array.isArray(topics)) {
             return res.status(400).json({ success: false, message: 'Invalid topics format' });
         }
@@ -85,9 +85,8 @@ const topicSelection = asyncHandler(async (req, res) => {
     }
 })
 
-const createQuestion=asyncHandler(async(req,res)=>{
-    try{
-        console.log('question controller')
+const createQuestion = asyncHandler(async (req, res) => {
+    try {
         const { topic, question, correctAnswer, marks, options } = req.body;
         const newQuestion = new Question({
             topic,
@@ -98,10 +97,94 @@ const createQuestion=asyncHandler(async(req,res)=>{
         });
         await newQuestion.save();
         res.status(201).json({ success: true, message: 'Question created successfully' });
-    }catch(error){
+    } catch (error) {
         console.log(error.message);
         res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 })
 
-module.exports = { register, login, topicSelection, createQuestion };
+const getRandomQuestions = asyncHandler(async (req, res) => {
+    try {
+        const topics = req.query.topics;
+        if (!topics) {
+            return res.status(400).json({ success: false, message: 'No topics provided' });
+        }
+        const topicsArray = Array.isArray(topics) ? topics : [topics];
+        const totalNumQuestions = 5;
+        const numQuestionsPerTopic = Math.ceil(totalNumQuestions / topicsArray.length);
+        let questions = [];
+        for (const topic of topicsArray) {
+            const topicQuestions = await Question.aggregate([
+                { $match: { topic: topic } },
+                { $sample: { size: numQuestionsPerTopic } }
+            ]);
+            questions = questions.concat(topicQuestions);
+        }
+        if (questions.length > totalNumQuestions) {
+            questions = questions.slice(0, totalNumQuestions);
+        }
+        res.status(200).json({ success: true, data: questions });
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+})
+
+const result = asyncHandler(async (req, res) => {
+    try {
+        const { selectedAnswers, selectedTopics } = req.body;
+        let totalMarks = 0;
+        const userId = req.user._id;
+        for (const questionId in selectedAnswers) {
+            if (selectedAnswers.hasOwnProperty(questionId)) {
+                const selectedAnswer = selectedAnswers[questionId];
+                const question = await Question.findById(questionId);
+                if (!question) {
+                    console.error(`Question with ID ${questionId} not found`);
+                    continue;
+                }
+                if (selectedAnswer === question.correctAnswer) {
+                    totalMarks += question.marks;
+                }
+            }
+        }
+        const newResult = {
+            userId: userId,
+            marks: totalMarks,
+            topics: selectedTopics
+        };
+        const result = new Result(newResult);
+        await result.save();
+        res.status(200).json({ success: true });
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+});
+
+
+const scorecards = asyncHandler(async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const results = await Result.find({ userId });
+        res.status(200).json({ success: true, data: results });
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+})
+
+const logout = asyncHandler(async (req, res) => {
+    try {
+        res.cookie('userToken', '', {
+            httpOnly: true,
+            expires: new Date(0)
+        });
+        res.status(200).json({ message: " user logged Out" });
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+})
+
+module.exports = { register, login, topicSelection, createQuestion, getRandomQuestions, result, scorecards, logout };
