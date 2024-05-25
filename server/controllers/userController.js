@@ -4,8 +4,6 @@ const Question = require('../models/questionModel');
 const Result = require('../models/resultModel');
 const bcrypt = require('bcryptjs');
 const generateToken = require('../utils/generateToken');
-const jwt = require('jsonwebtoken')
-const swal = require('sweetalert2');
 
 const register = asyncHandler(async (req, res) => {
     try {
