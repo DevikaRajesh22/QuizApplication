@@ -6,7 +6,7 @@ const { protect } = require('../middlewares/authMiddleware')
 router.post('/register', register);
 router.post('/login', login);
 router.post('/topics/select', protect, topicSelection);
-router.post('/questions', protect, createQuestion)
+router.post('/questions', createQuestion)
 router.get('/quiz', getRandomQuestions)
 router.post('/result', protect, result)
 router.get('/scorecards', protect, scorecards)
