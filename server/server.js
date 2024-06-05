@@ -21,6 +21,8 @@ app.use(
     })
 );
 
+app.options('/api/login', cors());
+
 
 app.use('/api', userRoute);
 
