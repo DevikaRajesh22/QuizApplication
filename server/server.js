@@ -21,6 +21,6 @@ app.use(
     })
 );
 
-app.use('/api/', userRoute);
+app.use('/api', userRoute);
 
 app.listen(port, () => console.log(`Server started at port ${port}`));
