@@ -3,7 +3,6 @@ const app = express();
 
 const dotenv = require('dotenv');
 dotenv.config();
-const cookieParser = require('cookie-parser');
 const port = process.env.PORT || 5000;
 const userRoute = require('./routes/userRoutes');
 const connectDB = require('./config/connectDB');
@@ -18,6 +17,7 @@ app.use(
         origin: ["https://quizmaster-eight.vercel.app"],
         methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
         credentials: true,
+        optionsSuccessStatus: 200
     })
 );
 
