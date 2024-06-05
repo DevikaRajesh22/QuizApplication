@@ -133,6 +133,7 @@ const QuizPage = () => {
                                     >
                                         Submit
                                     </button>
+                                    <div></div>
                                 </form>
                             ) : (
                                 <p>Loading questions...</p>
