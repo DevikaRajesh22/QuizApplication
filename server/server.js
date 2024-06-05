@@ -15,7 +15,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(
     cors({
-        origin: ["https://quizmaster-eight.vercel.app/"],
+        origin: ["https://quizmaster-eight.vercel.app"],
         methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
         credentials: true,
     })
