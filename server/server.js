@@ -12,13 +12,15 @@ connectDB();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use(cors({
-    origin: 'https://quizmaster-eight.vercel.app',
-    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
-    credentials: true,
-    optionsSuccessStatus: 200,
-}));
+app.use(
+    cors({
+        origin: ["https://quizmaster-eight.vercel.app"],
+        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+        credentials: true,
+        optionsSuccessStatus: 200
+    })
+);
 
-app.use('/api/', userRoute);
+app.use('/api', userRoute);
 
 app.listen(port, () => console.log(`Server started at port ${port}`));
