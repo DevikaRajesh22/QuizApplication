@@ -51,7 +51,7 @@ const SignupPage = () => {
             const res = await Api.post('/register', { name, email, password });
             if (res.data.status) {
                 dispatch(setCredentials(res.data.token))
-                navigate('/users/topics')
+                navigate('/topics')
                 toast.success("signed up successfully")
             } else if (!res.data.status) {
                 toast.error(res.data.message)
@@ -156,7 +156,7 @@ const SignupPage = () => {
                             <p className="text-sm font-light text-gray-500 dark:text-gray-400">
                                 Already have an account?{" "}
                                 <Link
-                                    to="/users/login"
+                                    to="/login"
                                     className="font-medium text-primary-600 hover:underline dark:text-primary-500"
                                 >
                                     Login here

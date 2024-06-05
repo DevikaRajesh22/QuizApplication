@@ -68,7 +68,7 @@ const QuizPage = () => {
             });
             if (response.data.success) {
                 toast.success('Successfully submitted...');
-                navigate('/users/score');
+                navigate('/score');
             } else if (!response.data.success) {
                 toast.error(response.data.message);
             }
@@ -78,7 +78,7 @@ const QuizPage = () => {
     };
 
     const handleRetakeQuiz = () => {
-        navigate('/users/topics');
+        navigate('/topics');
     };
 
     return (

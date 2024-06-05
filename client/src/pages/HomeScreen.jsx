@@ -12,7 +12,7 @@ const HomeScreen = () => {
         Please log in to take a quiz and test your knowledge.
       </p>
       <Link
-        to="/users/login"
+        to="/login"
         className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 dark:bg-blue-500 dark:hover:bg-blue-600"
       >
         Login

@@ -44,7 +44,7 @@ const Topics = () => {
                 const params = new URLSearchParams();
                 selectedTopics.forEach(topic => params.append('topics', topic));
                 console.log('hey', params.toString())
-                navigate(`/users/quiz?${params.toString()}`);
+                navigate(`/quiz?${params.toString()}`);
             } else if (!response.data.success) {
                 toast.error(response.data.message);
             }

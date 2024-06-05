@@ -45,7 +45,7 @@ const LoginPage = () => {
             if (res.data.status) {
                 dispatch(setCredentials(res.data.token))
                 toast.success("Logged in successfully..")
-                navigate('/users/topics')
+                navigate('/topics')
             } else if (!res.data.status) {
                 toast.error(res.data.message)
             }
@@ -113,7 +113,7 @@ const LoginPage = () => {
                             <p className="text-sm font-light text-gray-500 dark:text-gray-400">
                                 Don’t have an account yet?{" "}
                                 <Link
-                                    to="/users/signup"
+                                    to="/signup"
                                     className="font-medium text-primary-600 hover:underline dark:text-primary-500"
                                 >
                                     Sign up
