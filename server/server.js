@@ -12,17 +12,16 @@ connectDB();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+const allowedOrigins = ["https://quizmaster-eight.vercel.app"];
+const allowedMethods = ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'];
 app.use(
     cors({
-        origin: ["https://quizmaster-eight.vercel.app"],
-        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+        origin: allowedOrigins,
+        methods: allowedMethods,
         credentials: true,
         optionsSuccessStatus: 200
     })
 );
-
-app.options('/api/login', cors());
-
 
 app.use('/api', userRoute);
 
